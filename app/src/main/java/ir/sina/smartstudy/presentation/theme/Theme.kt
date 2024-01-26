@@ -1,4 +1,4 @@
-package ir.sina.smartstudy.ui.theme
+package ir.sina.smartstudy.presentation.theme
 
 import android.app.Activity
 import android.os.Build
