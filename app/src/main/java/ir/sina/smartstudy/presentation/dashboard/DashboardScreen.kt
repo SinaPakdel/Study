@@ -1,6 +1,5 @@
 package ir.sina.smartstudy.presentation.dashboard
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,9 +26,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +41,7 @@ import ir.sina.smartstudy.R
 import ir.sina.smartstudy.domain.model.Session
 import ir.sina.smartstudy.domain.model.Subject
 import ir.sina.smartstudy.domain.model.Task
+import ir.sina.smartstudy.presentation.component.AddSubjectDialog
 import ir.sina.smartstudy.presentation.component.CountCard
 import ir.sina.smartstudy.presentation.component.SubjectCard
 import ir.sina.smartstudy.presentation.component.studySessionList
@@ -135,6 +139,24 @@ fun DashboardScreen() {
         ),
     )
 
+    var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var subjectName by remember { mutableStateOf("") }
+    var goalHours by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(Subject.subjectCardColors.random()) }
+
+    AddSubjectDialog(
+        isOpen = isAddSubjectDialogOpen,
+        onDismissRequest = { isAddSubjectDialogOpen = false },
+        onConfirmButtonClick = { isAddSubjectDialogOpen = false },
+        subjectName = subjectName,
+        goalHours = goalHours,
+        selectedColor = selectedColor,
+        onColorChanged ={selectedColor=it},
+        onSubjectNameChange = { subjectName = it },
+        onGoalHoursChange = { goalHours = it }
+
+    )
+
     Scaffold(topBar = { DashboardScreenTopBar() }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -153,7 +175,11 @@ fun DashboardScreen() {
             }
 
             item {
-                SubjectCardSection(modifier = Modifier.fillMaxWidth(), subjectList = subjects)
+                SubjectCardSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    subjectList = subjects,
+                    onAddIconClick = { isAddSubjectDialogOpen = true }
+                )
             }
 
             item {
@@ -178,7 +204,7 @@ fun DashboardScreen() {
             studySessionList(
                 sectionTitle = "RECENT STUDY SESSIONS",
                 emptyListText = "You Dont have any upcoming Sessions.",
-                sessions =sessions,
+                sessions = sessions,
                 onDeleteIconTask = {
 
                 }
@@ -232,7 +258,8 @@ private fun CountCardsSelection(
 private fun SubjectCardSection(
     modifier: Modifier,
     subjectList: List<Subject>,
-    emptyListText: String = "You Don't Have Any Subject\nClick the + button to add new subject "
+    emptyListText: String = "You Don't Have Any Subject\nClick the + button to add new subject ",
+    onAddIconClick: () -> Unit
 ) {
     Column(modifier = modifier) {
         Row(
@@ -246,7 +273,7 @@ private fun SubjectCardSection(
                 modifier = Modifier.padding(start = 12.dp)
             )
 
-            IconButton(onClick = {}) {
+            IconButton(onClick = onAddIconClick) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Subject"
