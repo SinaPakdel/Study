@@ -1,6 +1,5 @@
 package ir.sina.smartstudy.presentation.component
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

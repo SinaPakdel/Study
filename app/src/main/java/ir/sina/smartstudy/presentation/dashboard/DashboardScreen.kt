@@ -43,6 +43,7 @@ import ir.sina.smartstudy.domain.model.Subject
 import ir.sina.smartstudy.domain.model.Task
 import ir.sina.smartstudy.presentation.component.AddSubjectDialog
 import ir.sina.smartstudy.presentation.component.CountCard
+import ir.sina.smartstudy.presentation.component.DeleteDialog
 import ir.sina.smartstudy.presentation.component.SubjectCard
 import ir.sina.smartstudy.presentation.component.studySessionList
 import ir.sina.smartstudy.presentation.component.taskList
@@ -140,6 +141,8 @@ fun DashboardScreen() {
     )
 
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+
     var subjectName by remember { mutableStateOf("") }
     var goalHours by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Subject.subjectCardColors.random()) }
@@ -151,11 +154,17 @@ fun DashboardScreen() {
         subjectName = subjectName,
         goalHours = goalHours,
         selectedColor = selectedColor,
-        onColorChanged ={selectedColor=it},
+        onColorChanged = { selectedColor = it },
         onSubjectNameChange = { subjectName = it },
         onGoalHoursChange = { goalHours = it }
-
     )
+
+    DeleteDialog(
+        isOpen = isDeleteSessionDialogOpen,
+        title = "Delete Session?",
+        bodyText = "Are you sure, you want to delete this session? Your studied hours will be reduced",
+        onDismissRequest = { isDeleteSessionDialogOpen = false },
+        onConfirmButtonClick = { isDeleteSessionDialogOpen = false })
 
     Scaffold(topBar = { DashboardScreenTopBar() }) { paddingValues ->
         LazyColumn(
@@ -205,9 +214,7 @@ fun DashboardScreen() {
                 sectionTitle = "RECENT STUDY SESSIONS",
                 emptyListText = "You Dont have any upcoming Sessions.",
                 sessions = sessions,
-                onDeleteIconTask = {
-
-                }
+                onDeleteIconTask = { isDeleteSessionDialogOpen = true }
             )
         }
     }
